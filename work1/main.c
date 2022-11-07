@@ -6,44 +6,94 @@
 
 int pipefd[2];
 
-void topla(){
+void topla()
+{
 
-    printf("topla\n");
     int ev = 0;
     int pf = fork();
 
-    if(pf == 0){
-
+    if (pf == 0)
+    {
         ev = execv("topla", NULL, NULL);
         perror("");
-
-    }else{
-
+    }
+    else
+    {
         char s[10];
-        read(pipefd[1], s, strlen(s));
-        while(strcmp(s, "topla") != 0){
-            read(pipefd[1], s, strlen(s));
-            print("%s ", s);
-        }
+        do
+        {
+            scanf("%s", s);
+            write(pipefd[1], s, strlen(s));
 
-        wait[&ev];
+        } while (strcmp(s, "topla") != 0);
 
+        wait(&ev);
     }
 }
 
+void carp()
+{
+    int ev = 0;
+    int pf = fork();
 
-void carp() {
+    if (pf == 0)
+    {
 
+        ev = execv("carp", NULL, NULL);
+        perror("");
+    }
+    else
+    {
+        char s[10];
+        do
+        {
+            scanf("%s", s);
+            write(pipefd[1], s, strlen(s));
 
+        } while (strcmp(s, "carp") != 0);
 
+        wait(&ev);
+    }
 }
 
-int main(){
-    char s[10];
-    printf("topla prog\n");
-    read(3, s, 10);
+void printMenu()
+{
+    printf("\n---Menu---\n");
+    printf("1- Toplama\n");
+    printf("2- Carpma\n");
+    printf("3- Exit");
+}
 
-    printf("deger= %s \n", s);
+int main()
+{
+
+    if (pipe(pipefd) < 0)
+    {
+        perror("pipe");
+        exit(1);
+    }
+
+    int secenek = 0;
+
+    while (secenek != 3)
+    {
+        printMenu();
+        printf("\nSecim:");
+        scanf("%d", &secenek);
+
+        if (secenek == 1)
+        {
+            topla();
+        }
+        if (secenek == 2)
+        {
+            carp();
+        }
+        if (secenek == 3)
+        {
+            exit(1);
+        }
+    }
 
     return 0;
 }
